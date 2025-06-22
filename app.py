@@ -61,11 +61,9 @@ generate = st.button("Generate Image")
 if generate:
     st.subheader(f"Generated images for '{number}'")
     cols = st.columns(5)
+    images = generate_number_picture(number)
 
-    for i in range(5):
-        img = generate_number_picture(number)
+    for i, img in enumerate(images):
+        print(f"Image {i} shape:", img.shape)  # Debug print
 
-        # Plot image to buffer
-        buf = BytesIO()
-        plt.imsave(buf, img, cmap='gray', format='png')
-        cols[i].image(buf.getvalue(), width=100, caption=f"Sample {i+1}")
+        cols[i].image(img, width=100, clamp=True, channels="L")
