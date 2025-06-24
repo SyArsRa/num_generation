@@ -3,12 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
 import torch
+from torchvision.transforms import ToPILImage
 
 # Reuse these values from your training script
 latent_dim = 100
 num_classes = 10
 embedding_dim = 50
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+to_pil = ToPILImage()
 
 # Generator definition (same as training)
 class Generator(torch.nn.Module):
@@ -58,12 +60,18 @@ st.title("Digit Generator (0-9)")
 number = st.number_input("Enter a digit (0-9)", min_value=0, max_value=9, step=1)
 generate = st.button("Generate Image")
 
+images = None
 if generate:
     st.subheader(f"Generated images for '{number}'")
     cols = st.columns(5)
     images = generate_number_picture(number)
 
-    for i, img in enumerate(images):
-        print(f"Image {i} shape:", img.shape)  # Debug print
+if images:
+    # Convert numpy arrays to PIL images for display
+    pil_imgs = [ to_pil(img) for img in images ]
 
-        cols[i].image(img, width=100, clamp=True, channels="L")
+    st.image(
+            pil_imgs,
+            caption=[str(number)] * 5,
+            width=56
+        )
